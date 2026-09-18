@@ -35,6 +35,8 @@ def init_db():
     conn.commit()
     conn.close()
 
+init_db()
+
 def calculate_flags(text, source_url):
     flags = []
     lower = text.lower()
