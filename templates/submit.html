@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Submit a Claim · TruthLens{% endblock %}
+{% block content %}
+<div class="page-title"><p class="eyebrow">NEW SUBMISSION</p><h1>Submit a viral claim</h1><p>TruthLens checks the submission for simple, transparent risk signals. A reviewer handles the final status.</p></div>
+<form class="card form" method="post">
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  <label>Claim text <span>*</span>
+    <textarea name="text" rows="8" placeholder="Paste the viral post or claim here..." required></textarea>
+  </label>
+  <div class="two">
+    <label>Source platform <span>*</span>
+      <select name="platform" required><option value="">Choose...</option>{% for p in platforms %}<option>{{ p }}</option>{% endfor %}</select>
+    </label>
+    <label>Category <span>*</span>
+      <select name="category" required><option value="">Choose...</option>{% for c in categories %}<option>{{ c }}</option>{% endfor %}</select>
+    </label>
+  </div>
+  <label>Source link <span class="optional">(optional)</span>
+    <input name="source_url" type="url" placeholder="https://example.com/original-post">
+  </label>
+  <div class="info"><strong>Automatic triage:</strong> “breaking”, “shocking”, or “share before deleted” → Sensational · >50% uppercase letters → Shouting · no source link → Unsourced. Two or more flags → High Risk.</div>
+  <button class="button" type="submit">Submit for review</button>
+</form>
+{% endblock %}

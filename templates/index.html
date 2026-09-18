@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Public Feed · TruthLens{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">CIVIC TECH · MISINFORMATION TRIAGE</p>
+    <h1>See what needs a closer look.</h1>
+    <p class="sub">Claims are automatically triaged for risk. Reviews add context without changing the original submission.</p>
+  </div>
+  <a class="button" href="{{ url_for('submit') }}">+ Submit a claim</a>
+</section>
+
+<section class="filters card">
+  <form method="get">
+    <label>Category
+      <select name="category">
+        <option value="">All categories</option>
+        {% for c in categories %}<option value="{{ c }}" {% if category==c %}selected{% endif %}>{{ c }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Status
+      <select name="status">
+        <option value="">All statuses</option>
+        {% for s in statuses %}<option value="{{ s }}" {% if status==s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+      </select>
+    </label>
+    <button class="button secondary" type="submit">Filter</button>
+    <a class="clear" href="{{ url_for('index') }}">Clear</a>
+  </form>
+</section>
+
+<div class="feed-head"><span>{{ claims|length }} claims</span><span>High-risk first · newest within risk level</span></div>
+
+{% if claims %}
+<div class="feed">
+{% for claim in claims %}
+<a class="claim-card" href="{{ url_for('detail', claim_id=claim.id) }}">
+  <div class="claim-meta"><span>{{ claim.platform }}</span><span>·</span><span>{{ claim.category }}</span><span class="date">{{ claim.submitted_at[:10] }}</span></div>
+  <h2>{{ claim.text }}</h2>
+  <div class="badges">
+    <span class="badge status">{{ claim.status }}</span>
+    <span class="badge {{ 'high' if claim.risk == 'High Risk' else 'low' }}">{{ claim.risk }}</span>
+    {% if claim.flags %}
+      {% for flag in claim.flags.split(', ') %}<span class="badge flag">{{ flag }}</span>{% endfor %}
+    {% endif %}
+  </div>
+</a>
+{% endfor %}
+</div>
+{% else %}
+<div class="empty card"><h2>No claims match those filters.</h2><p>Try clearing the filters or submit the first claim.</p></div>
+{% endif %}
+{% endblock %}

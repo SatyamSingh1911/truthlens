@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Claim #{{ claim.id }} · TruthLens{% endblock %}
+{% block content %}
+<a class="back" href="{{ url_for('index') }}">← Back to feed</a>
+<div class="detail-grid">
+  <article class="card detail-main">
+    <div class="claim-meta"><span>{{ claim.platform }}</span><span>·</span><span>{{ claim.category }}</span></div>
+    <h1>{{ claim.text }}</h1>
+    <div class="badges">
+      <span class="badge status">{{ claim.status }}</span>
+      <span class="badge {{ 'high' if claim.risk == 'High Risk' else 'low' }}">{{ claim.risk }}</span>
+    </div>
+    <hr>
+    <h3>Risk flags</h3>
+    {% if claim.flags %}
+      <div class="flag-list">{% for flag in claim.flags.split(', ') %}<span class="badge flag">{{ flag }}</span>{% endfor %}</div>
+    {% else %}<p class="muted">No automatic risk flags.</p>{% endif %}
+    {% if claim.source_url %}
+      <p class="source">Source: <a href="{{ claim.source_url }}" target="_blank" rel="noopener">Open source link ↗</a></p>
+    {% endif %}
+    <p class="submitted">Submitted {{ claim.submitted_at.replace('T',' ')[:19] }} UTC</p>
+  </article>
+
+  <aside class="card review">
+    <p class="eyebrow">REVIEW WORKFLOW</p>
+    <h2>Reviewer decision</h2>
+    <form method="post" action="{{ url_for('review', claim_id=claim.id) }}">
+      <label>Status
+        <select name="status" required>
+          {% for s in ['Verified True', 'False', 'Misleading'] %}
+            <option {% if claim.status==s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Reviewer's note
+        <textarea name="reviewer_note" rows="7" placeholder="Briefly explain the evidence or reasoning...">{{ claim.reviewer_note }}</textarea>
+      </label>
+      <button class="button" type="submit">Save review</button>
+    </form>
+    {% if claim.reviewed_at %}
+    <div class="reviewed"><strong>Last reviewed</strong><br>{{ claim.reviewed_at.replace('T',' ')[:19] }} UTC</div>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}
